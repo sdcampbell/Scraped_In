@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 import argparse
 
 parser = argparse.ArgumentParser(description='Return a list of formatted usernames from a LinkedIn Search')
@@ -35,7 +36,9 @@ def main():
     RESULTS_LOCATOR = "//span[@class='name actor-name']"
     results = set()
     names = set()
-    driver = webdriver.Chrome()
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    driver = webdriver.Chrome(chrome_options=chrome_options)
     login_url = "https://www.linkedin.com"
     company_url = "https://www.linkedin.com/search/results/people/?facetCurrentCompany=%5B%22{0}%22%5D".format(args.company_number)
     driver.get(login_url)
@@ -55,7 +58,7 @@ def main():
             for item in page_results:
                 results.add(item.text)
 
-            sleep(randint(1,10))
+            sleep(randint(2,6))
             driver.find_element(By.XPATH, "//div[@class='next-text']").click()
     except:
         pass
