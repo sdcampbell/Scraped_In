@@ -33,24 +33,27 @@ def format_username(name):
             return first_name + "." + last_name
 
 def main():
-    RESULTS_LOCATOR = "//span[@class='name actor-name']"
+    RESULTS_LOCATOR = "//*[contains(@class, 'name actor-name')]"
     results = set()
     names = set()
+    counter = 1
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--headless")
     driver = webdriver.Chrome(chrome_options=chrome_options)
-    login_url = "https://www.linkedin.com"
-    company_url = "https://www.linkedin.com/search/results/people/?facetCurrentCompany=%5B%22{0}%22%5D".format(args.company_number)
+    login_url = "https://www.linkedin.com/login?trk=guest_homepage-basic_nav-header-signin"
+    company_url = "https://www.linkedin.com/search/results/people/?facetCurrentCompany=%5B%22{0}%22%5D&page=".format(args.company_number)
     driver.get(login_url)
-    username = driver.find_element_by_id("login-email")
-    password = driver.find_element_by_id("login-password")
+    username = driver.find_element_by_id("username")
+    password = driver.find_element_by_id("password")
     username.send_keys(args.username)
     password.send_keys(args.password)
-    driver.find_element_by_id("login-submit").click()
-    driver.get(company_url)
+    #driver.find_element_by_id("#app__container > main > div > form > div.login__form_action_container > button").click()
+    driver.find_element(By.XPATH,"//button[contains(.,'Sign in')]").click()
+    driver.get(company_url + str(counter))
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
     try:
-        while driver.find_element(By.XPATH, "//div[@class='next-text']"):
+        while driver.find_element(By.XPATH, "//button[contains(.,'Next')]"):
             WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, RESULTS_LOCATOR)))
 
             page_results = driver.find_elements(By.XPATH, RESULTS_LOCATOR)
@@ -58,8 +61,11 @@ def main():
             for item in page_results:
                 results.add(item.text)
 
-            sleep(randint(2,6))
-            driver.find_element(By.XPATH, "//div[@class='next-text']").click()
+            sleep(randint(4,8))
+            counter += 1
+            driver.get(company_url + str(counter))
+            WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, RESULTS_LOCATOR)))
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     except:
         pass
 
