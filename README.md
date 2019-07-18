@@ -6,5 +6,5 @@ Requires selenium and chromedriver:
 
 pip3 install -r requirements.txt
 
-Download chromedriver from http://chromedriver.chromium.org/
+Download chromedriver from http://chromedriver.chromium.org/ and place it in your PATH.
 
